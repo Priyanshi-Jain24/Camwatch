@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_EMAIL: str = "admin@camwatch.com"
     FIRST_SUPERUSER_PASSWORD: str = "admin123"
 
-    BACKEND_CORS_ORIGINS: Any = '["http://localhost:3000","http://localhost:5173"]'
+    BACKEND_CORS_ORIGINS: Any = '["http://localhost:3000","http://localhost:5173","https://camwatch-fli3.vercel.app"]'
 
     def get_cors_origins(self) -> List[str]:
         if isinstance(self.BACKEND_CORS_ORIGINS, str):
