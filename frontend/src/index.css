@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Dark theme — "Onyx & Champagne" (default) ────────────────────────────── */
+/* Colors are stored as space-separated RGB channels so Tailwind opacity
+   modifiers (bg-success/20, border-danger/40, …) work. Wrap in rgb(var(--x))
+   when using a variable directly as a color in plain CSS. */
+:root {
+  --color-bg:       10 9 8;
+  --color-surface:  20 18 16;
+  --color-surface2: 30 26 23;
+  --color-border:   44 39 34;
+  --color-border2:  74 66 57;
+  --color-text:     239 233 222;
+  --color-muted:    157 149 138;
+  --color-dim:      107 99 89;
+  --color-accent:   220 192 138;
+  --color-success:  98 184 127;
+  --color-warning:  224 153 63;
+  --color-danger:   215 115 130;
+  --color-purple:   180 156 226;
+  --color-teal:     78 192 189;
+  --color-primary:  203 162 79;
+  --color-on-primary: #1a1611;
+  --sidebar-bg:     #0c0a09;
+  --shadow-card:    0 18px 42px rgba(0, 0, 0, 0.55), 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-card-sm: 0 14px 30px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.32);
+}
+
+/* ── Light theme — warm ivory & deep gold companion ───────────────────────── */
+.light {
+  --color-bg:       246 243 238;
+  --color-surface:  255 253 249;
+  --color-surface2: 240 236 227;
+  --color-border:   227 221 208;
+  --color-border2:  205 196 179;
+  --color-text:     42 37 32;
+  --color-muted:    138 128 115;
+  --color-dim:      194 185 168;
+  --color-accent:   168 125 46;
+  --color-success:  47 125 79;
+  --color-warning:  154 100 24;
+  --color-danger:   168 67 79;
+  --color-purple:   106 79 160;
+  --color-teal:     42 122 112;
+  --color-primary:  156 117 38;
+  --color-on-primary: #fffdf9;
+  --sidebar-bg:     #fffdf9;
+  --shadow-card:    0 20px 42px rgba(120, 105, 75, 0.18), 0 6px 14px rgba(120, 105, 75, 0.14);
+  --shadow-card-sm: 0 14px 28px rgba(120, 105, 75, 0.16), 0 4px 10px rgba(120, 105, 75, 0.1);
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    @apply bg-bg text-text font-sans antialiased;
+    margin: 0;
+  }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { @apply bg-bg; }
+  ::-webkit-scrollbar-thumb { @apply bg-dim rounded; }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border border-border rounded-lg p-5;
+    box-shadow: var(--shadow-card);
+  }
+  .card-sm {
+    @apply bg-surface border border-border rounded-lg p-4;
+    box-shadow: var(--shadow-card-sm);
+  }
+  .label {
+    @apply text-[10px] font-semibold uppercase tracking-widest text-muted mb-3;
+  }
+  .divider { @apply h-px bg-border; }
+
+  /* Status badges */
+  .badge-online {
+    @apply bg-success/20 text-success border border-success/40 text-[11px] font-semibold px-2 py-0.5 rounded shadow-[0_0_0_1px_rgba(98,184,127,0.10)_inset];
+  }
+  .badge-offline {
+    @apply bg-danger/20 text-danger border border-danger/40 text-[11px] font-semibold px-2 py-0.5 rounded shadow-[0_0_0_1px_rgba(215,115,130,0.10)_inset];
+  }
+  .badge-degraded {
+    @apply bg-warning/20 text-warning border border-warning/40 text-[11px] font-semibold px-2 py-0.5 rounded shadow-[0_0_0_1px_rgba(224,153,63,0.10)_inset];
+  }
+  .badge-unknown {
+    @apply bg-muted/10 text-muted border border-muted/30 text-[11px] font-medium px-2 py-0.5 rounded;
+  }
+  .badge-critical {
+    @apply bg-danger/20 text-danger border border-danger/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+  .badge-high {
+    @apply bg-warning/20 text-warning border border-warning/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+  .badge-medium {
+    @apply bg-warning/20 text-warning border border-warning/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+  .badge-low {
+    @apply bg-muted/10 text-muted border border-muted/30 text-[11px] font-medium px-2 py-0.5 rounded;
+  }
+  .badge-open {
+    @apply bg-danger/20 text-danger border border-danger/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+  .badge-acknowledged {
+    @apply bg-warning/20 text-warning border border-warning/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+  .badge-resolved {
+    @apply bg-success/20 text-success border border-success/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+  .badge-camera {
+    @apply bg-teal/20 text-teal border border-teal/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+  .badge-nvr {
+    @apply bg-purple/20 text-purple border border-purple/40 text-[11px] font-semibold px-2 py-0.5 rounded;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply bg-primary text-[color:var(--color-on-primary)] border border-primary/85 px-4 py-2 rounded text-sm font-semibold
+           hover:brightness-110 transition-all cursor-pointer inline-flex items-center gap-1.5
+           shadow-[0_10px_24px_rgba(203,162,79,0.30)];
+  }
+  .btn-ghost {
+    @apply bg-transparent text-muted border border-border px-4 py-2 rounded text-sm
+           hover:text-text hover:border-border2 hover:bg-surface2 transition-colors cursor-pointer inline-flex items-center gap-1.5;
+  }
+  .btn-danger {
+    @apply bg-danger/15 text-danger border border-danger/35 px-4 py-2 rounded text-sm
+           hover:bg-danger/25 transition-colors cursor-pointer inline-flex items-center gap-1.5;
+  }
+  .btn-teal {
+    @apply bg-teal/20 text-teal border border-teal/35 px-4 py-2 rounded text-sm
+           hover:bg-teal/30 transition-colors cursor-pointer inline-flex items-center gap-1.5;
+  }
+  .btn-success {
+    @apply bg-success/20 text-success border border-success/35 px-4 py-2 rounded text-sm
+           hover:bg-success/30 transition-colors cursor-pointer inline-flex items-center gap-1.5;
+  }
+  .btn-icon {
+    @apply p-1.5 rounded border border-border text-muted hover:text-text hover:border-border2 hover:bg-surface2
+           transition-colors cursor-pointer inline-flex items-center justify-center;
+  }
+
+  /* Form elements */
+  .input {
+    @apply bg-surface2 border border-border text-text rounded px-3 py-2 text-sm w-full
+           focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(220,192,138,0.20)]
+           transition-colors placeholder:text-muted;
+  }
+  .select {
+    @apply bg-surface2 border border-border text-text rounded px-3 py-2 text-sm
+           focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(220,192,138,0.20)]
+           transition-colors;
+  }
+  .textarea {
+    @apply bg-surface2 border border-border text-text rounded px-3 py-2 text-sm w-full
+           focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(220,192,138,0.20)]
+           transition-colors placeholder:text-muted resize-none;
+  }
+  .form-label {
+    @apply text-xs text-muted block mb-1.5 font-medium;
+  }
+
+  /* Tables */
+  .table-header {
+    @apply text-left text-[11px] text-muted font-semibold pb-2.5 pr-4 tracking-wide uppercase;
+  }
+  .table-row {
+    @apply border-b border-border hover:bg-surface2 transition-colors;
+  }
+  .table-cell {
+    @apply py-3 pr-4 text-[13px];
+  }
+  .table-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, rgb(var(--color-border2)) 45%, transparent) transparent;
+  }
+  .table-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+  .table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .table-scroll::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, rgb(var(--color-border2)) 42%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  .table-scroll:hover::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, rgb(var(--color-muted)) 45%, transparent);
+    background-clip: content-box;
+  }
+
+  /* Navigation */
+  .nav-item {
+    @apply flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] text-muted
+           border-l-2 border-transparent hover:text-text hover:bg-surface2 transition-colors cursor-pointer;
+  }
+  .nav-item-active {
+    @apply nav-item text-text bg-[linear-gradient(90deg,rgba(220,192,138,0.16),rgba(220,192,138,0.03))] border-l-accent font-semibold shadow-[inset_0_0_0_1px_rgba(220,192,138,0.10)];
+  }
+
+  /* Section headers */
+  .section-title {
+    @apply text-[13px] font-semibold text-text mb-1;
+  }
+  .section-subtitle {
+    @apply text-[11px] text-muted;
+  }
+}

@@ -1,0 +1,36 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: ['class'],
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        // Dark mode
+        bg:      'var(--color-bg)',
+        surface: 'var(--color-surface)',
+        surface2:'var(--color-surface2)',
+        border:  'var(--color-border)',
+        border2: 'var(--color-border2)',
+        text:    'var(--color-text)',
+        muted:   'var(--color-muted)',
+        dim:     'var(--color-dim)',
+        accent:  'var(--color-accent)',
+        success: 'var(--color-success)',
+        warning: 'var(--color-warning)',
+        danger:  'var(--color-danger)',
+        purple:  'var(--color-purple)',
+        teal:    'var(--color-teal)',
+        primary: 'var(--color-primary)',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      borderRadius: {
+        DEFAULT: '6px',
+        lg: '10px',
+        xl: '14px',
+      },
+    },
+  },
+  plugins: [],
+}

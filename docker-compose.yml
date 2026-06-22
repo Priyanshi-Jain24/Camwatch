@@ -1,0 +1,133 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: camwatch
+      POSTGRES_PASSWORD: camwatch123
+      POSTGRES_DB: camwatch
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U camwatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - camwatch
+
+
+  api:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://camwatch:camwatch123@db:5432/camwatch
+      SYNC_DATABASE_URL: postgresql://camwatch:camwatch123@db:5432/camwatch
+      SECRET_KEY: change-this-super-secret-key-minimum-32-chars
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+      FIRST_SUPERUSER_EMAIL: admin@camwatch.com
+      FIRST_SUPERUSER_PASSWORD: admin123
+      BACKEND_CORS_ORIGINS: '["http://localhost", "http://localhost:3000"]'
+      PING_INTERVAL_SECONDS: 60
+      DEFAULT_NOTIFICATION_CHANNEL: email
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_FROM: ""
+      MAIL_PORT: 587
+      MAIL_SERVER: ""
+      MAIL_FROM_NAME: CamWatch
+      MAIL_STARTTLS: "true"
+      MAIL_SSL_TLS: "false"
+      MAIL_VALIDATE_CERTS: "true"
+      ALERT_EMAIL_RECIPIENTS: "priyanshi.jain@cars24.com"
+      SMTP_HOST: "smtp.gmail.com"
+      SMTP_PORT: 587
+      SMTP_USERNAME: "${SMTP_USERNAME}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      SMTP_FROM: "${SMTP_FROM}"
+      SMTP_ENABLED: "true"
+      SENDGRID_API_KEY: ""
+      SENDGRID_FROM_EMAIL: ""
+      SENDGRID_FROM_NAME: CamWatch
+      GOOGLE_SSO_ENABLED: "false"
+      GOOGLE_CLIENT_ID: ""
+      WHATSAPP_PROVIDER: log
+      RUN_SCHEDULER: "false"
+      RUN_DB_INIT: "true"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - camwatch
+
+  monitor:
+    build: ./backend
+    command: ["python", "-m", "app.monitor_main"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://camwatch:camwatch123@db:5432/camwatch
+      SYNC_DATABASE_URL: postgresql://camwatch:camwatch123@db:5432/camwatch
+      SECRET_KEY: change-this-super-secret-key-minimum-32-chars
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+      FIRST_SUPERUSER_EMAIL: admin@camwatch.com
+      FIRST_SUPERUSER_PASSWORD: admin123
+      BACKEND_CORS_ORIGINS: '["http://localhost", "http://localhost:3000"]'
+      PING_INTERVAL_SECONDS: 60
+      DEFAULT_NOTIFICATION_CHANNEL: email
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_FROM: ""
+      MAIL_PORT: 587
+      MAIL_SERVER: ""
+      MAIL_FROM_NAME: CamWatch
+      MAIL_STARTTLS: "true"
+      MAIL_SSL_TLS: "false"
+      MAIL_VALIDATE_CERTS: "true"
+      ALERT_EMAIL_RECIPIENTS: "priyanshi.jain@cars24.com"
+      SMTP_HOST: "smtp.gmail.com"
+      SMTP_PORT: 587
+      SMTP_USERNAME: "${SMTP_USERNAME}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      SMTP_FROM: "${SMTP_FROM}"
+      SMTP_ENABLED: "true"
+      SENDGRID_API_KEY: ""
+      SENDGRID_FROM_EMAIL: ""
+      SENDGRID_FROM_NAME: CamWatch
+      GOOGLE_SSO_ENABLED: "false"
+      GOOGLE_CLIENT_ID: ""
+      WHATSAPP_PROVIDER: log
+      RUN_SCHEDULER: "true"
+      RUN_DB_INIT: "false"
+    restart: unless-stopped
+    networks:
+      - camwatch
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - camwatch
+
+volumes:
+  pgdata:
+
+networks:
+  camwatch:
+    driver: bridge
