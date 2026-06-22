@@ -17,6 +17,12 @@ from app.services.device_urls import generate_nvr_channel_rtsp_urls, generate_rt
 
 logger = logging.getLogger("monitor")
 
+# Max devices checked concurrently. Must stay BELOW the DB pool ceiling
+# (pool_size + max_overflow in db/session.py) or sessions block and time out
+# with "QueuePool limit ... reached", and low enough that concurrent
+# ffprobe/ping subprocesses don't exhaust a small (512MB) instance's memory.
+CHECK_CONCURRENCY = 5
+
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -718,7 +724,7 @@ async def run_all_checks():
     Called by the service-checks scheduler job every RTSP_INTERVAL_SECONDS."""
     device_ids = await _get_active_device_ids()
     logger.info("Running full checks on %s devices", len(device_ids))
-    batch_size = 50
+    batch_size = CHECK_CONCURRENCY
     for i in range(0, len(device_ids), batch_size):
         batch = device_ids[i:i + batch_size]
         await asyncio.gather(*[run_device_check(did) for did in batch])
@@ -811,7 +817,7 @@ async def run_ping_checks():
                 logger.error("Error ping-checking device %s: %s", device_id, e)
                 await db.rollback()
 
-    batch_size = 50
+    batch_size = CHECK_CONCURRENCY
     for i in range(0, len(device_ids), batch_size):
         batch = device_ids[i:i + batch_size]
         await asyncio.gather(*[_ping_only(did) for did in batch])
