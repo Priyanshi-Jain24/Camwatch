@@ -21,6 +21,18 @@ from app.services.notifications import DEFAULT_CHANNEL, send_notification
 FAILURE_THRESHOLD = 3
 ACTIVE_STATUSES = ("open", "acknowledged", "recovered")
 
+# NVR service-level failures are surfaced as "degraded" device status on the
+# dashboard ONLY — they never raise an alert or send a notification. Device
+# status is computed separately (resolve_device_status), so suppressing the
+# alert here does not affect what the dashboard shows. Only an NVR going fully
+# offline (nvr_ping_failure) still alerts.
+# Remove nvr_recording_failure from this set if recording loss should alert.
+SUPPRESSED_ALERT_TYPES = {
+    AlertType.nvr_http_failure,
+    AlertType.nvr_rtsp_failure,
+    AlertType.nvr_recording_failure,
+}
+
 
 ISSUE_LABELS = {
     AlertType.ping_failure: "Ping Failure",
@@ -88,6 +100,12 @@ async def record_check_result(
     severity: AlertSeverity,
     issue: Optional[str] = None,
 ) -> None:
+    # Dashboard-only check types never alert. Recover/close any pre-existing
+    # alert of this type so the board clears, then stop before creating one.
+    if alert_type in SUPPRESSED_ALERT_TYPES:
+        await mark_recovered(db, device_id=device.id, alert_type=alert_type)
+        return
+
     counter = await get_or_create_counter(db, device.id, check_key(alert_type))
     if success:
         counter.consecutive_failures = 0
