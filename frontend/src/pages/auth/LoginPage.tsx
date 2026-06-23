@@ -13,8 +13,8 @@ declare global {
 }
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@camwatch.com')
-  const [password, setPassword] = useState('admin123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleEnabled, setGoogleEnabled] = useState(false)
@@ -155,7 +155,7 @@ export default function LoginPage() {
                 onChange={e => setEmail(e.target.value)}
                 required
                 autoFocus
-                placeholder="admin@camwatch.com"
+                placeholder="Email address"
               />
             </div>
             <div>
