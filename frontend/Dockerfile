@@ -3,6 +3,9 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
+# Local/compose builds talk to the API via nginx on the same origin.
+# (Vercel leaves this unset and falls back to the absolute Render URL.)
+ENV VITE_API_URL=/api/v1
 RUN npm run build
 
 FROM nginx:alpine

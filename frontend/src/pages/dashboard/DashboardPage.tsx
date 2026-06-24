@@ -10,16 +10,20 @@ import {
 } from 'lucide-react'
 
 function KpiCard({
-  label, value, sub, color, icon,
+  label, value, sub, color, icon, to,
 }: {
   label: string
   value: number
   sub?: string
   color: string
   icon: React.ReactNode
+  to?: string
 }) {
-  return (
-    <div className="card py-4 px-5 flex items-start justify-between gap-3 hover:border-border2 transition-colors">
+  const body = (
+    <div className={cn(
+      'card py-4 px-5 flex items-start justify-between gap-3 transition-colors h-full',
+      to ? 'hover:border-accent/50 cursor-pointer' : 'hover:border-border2',
+    )}>
       <div className="flex-1 min-w-0">
         <div className="text-[11px] text-muted mb-2 font-medium">{label}</div>
         <div className={cn('text-[26px] font-bold tabular-nums leading-none', color)}>{value}</div>
@@ -36,6 +40,7 @@ function KpiCard({
       </div>
     </div>
   )
+  return to ? <Link to={to} className="block">{body}</Link> : body
 }
 
 function SiteHealthRow({ site }: { site: SiteStatus }) {
@@ -175,6 +180,7 @@ export default function DashboardPage() {
             color="text-accent"
             icon={<Camera size={18} />}
             sub={`${camPct}% availability`}
+            to="/devices?type=camera"
           />
           <KpiCard
             label="Online"
@@ -182,6 +188,7 @@ export default function DashboardPage() {
             color="text-success"
             icon={<Wifi size={18} />}
             sub={degradedCameras > 0 ? `${degradedCameras} degraded` : 'Currently reachable'}
+            to="/devices?type=camera&status=online"
           />
           <KpiCard
             label="Offline"
@@ -189,12 +196,14 @@ export default function DashboardPage() {
             color="text-danger"
             icon={<WifiOff size={18} />}
             sub={offlineCams.length > 0 ? `${offlineCams.length} need attention` : 'All clear'}
+            to="/devices?type=camera&status=offline"
           />
           <KpiCard
             label="Degraded"
             value={degradedCameras}
             color="text-warning"
             icon={<Wifi size={18} />}
+            to="/devices?type=camera&status=degraded"
           />
           <KpiCard
             label="Standalone"
@@ -224,6 +233,7 @@ export default function DashboardPage() {
             color="text-purple"
             icon={<Server size={18} />}
             sub={`${nvrPct}% availability`}
+            to="/devices?type=nvr"
           />
           <KpiCard
             label="Online"
@@ -231,12 +241,14 @@ export default function DashboardPage() {
             color="text-success"
             icon={<CheckCircle size={18} />}
             sub={degradedNvrs > 0 ? `${degradedNvrs} degraded` : undefined}
+            to="/devices?type=nvr&status=online"
           />
           <KpiCard
             label="Offline"
             value={s?.offline_nvrs ?? 0}
             color="text-danger"
             icon={<WifiOff size={18} />}
+            to="/devices?type=nvr&status=offline"
           />
             <KpiCard
               label="Healthy"
@@ -249,6 +261,7 @@ export default function DashboardPage() {
               value={degradedNvrs}
               color="text-warning"
               icon={<Wifi size={18} />}
+              to="/devices?type=nvr&status=degraded"
             />
             <KpiCard
               label="Failed"
