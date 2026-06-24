@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { devicesApi } from '@/api'
 import { formatDate, formatDowntime, formatLatencyWithLoss } from '@/utils'
 import { Spinner, EmptyState, PageHeader, StatusDot, StatusBadge, DeviceTypeBadge } from '@/components/shared'
-import { Search, MonitorPlay } from 'lucide-react'
+import { Search, MonitorPlay, ArrowLeft } from 'lucide-react'
 import type { Device } from '@/types'
 
 // "online" intentionally includes degraded so the count matches the dashboard's
@@ -18,6 +18,7 @@ function matchesStatus(device: Device, status: string): boolean {
 
 export default function DevicesPage() {
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
   const type = params.get('type') ?? ''       // '' | 'camera' | 'nvr'
   const status = params.get('status') ?? ''    // '' | 'online' | 'offline' | 'degraded' | 'unknown'
   const search = params.get('q') ?? ''
@@ -55,6 +56,12 @@ export default function DevicesPage() {
 
   return (
     <div className="p-6">
+      <button
+        onClick={() => navigate('/')}
+        className="btn-ghost text-xs py-1.5 px-2 mb-3"
+      >
+        <ArrowLeft size={13} /> Back to Dashboard
+      </button>
       <PageHeader
         title={`${statusLabel} ${typeLabel}`}
         subtitle={subtitle}
