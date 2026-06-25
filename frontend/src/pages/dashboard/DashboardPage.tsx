@@ -98,9 +98,9 @@ function AlertItem({ alert }: { alert: Alert }) {
 }
 
 function OfflineCard({ device, isCritical }: { device: Device; isCritical?: boolean }) {
-  return (
+  const body = (
     <div className={cn(
-      'bg-surface2 rounded-lg p-3 border mb-2 last:mb-0',
+      'bg-surface2 rounded-lg p-3 border mb-2 last:mb-0 hover:border-accent/50 transition-colors',
       isCritical ? 'border-danger/25' : 'border-danger/15',
     )}>
       <div className="flex items-start justify-between gap-2 mb-1">
@@ -122,6 +122,8 @@ function OfflineCard({ device, isCritical }: { device: Device; isCritical?: bool
       )}
     </div>
   )
+
+  return <Link to={`/devices/${device.id}`} className="block">{body}</Link>
 }
 
 export default function DashboardPage() {

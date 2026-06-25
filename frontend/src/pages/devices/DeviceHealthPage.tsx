@@ -4,7 +4,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { devicesApi } from '@/api'
 import {
   CurrentHealthSection,
-  CurrentStatusSummary,
   DeviceHealthSummary,
   DeviceInfoCard,
   EventHistory,
@@ -35,6 +34,21 @@ export default function DeviceHealthPage() {
   const device = deviceQuery.data
   const health = healthQuery.data
 
+  const currentChecks = useMemo(() => {
+    if (!device || !health) return []
+    if (device.device_type !== 'camera') return health.current_checks
+    return health.current_checks.filter((check) => check.key !== 'api')
+  }, [device, health])
+
+  const timeline = useMemo(() => {
+    if (!device || !health) return []
+    if (device.device_type !== 'camera') return health.timeline
+    return health.timeline.map((bucket) => ({
+      ...bucket,
+      checks: bucket.checks.filter((check) => check.label.toLowerCase() !== 'api'),
+    }))
+  }, [device, health])
+
   const backLabel = useMemo(() => {
     if (device?.device_type === 'camera') return 'Back to Cameras'
     if (device?.device_type === 'nvr') return 'Back to NVRs'
@@ -54,7 +68,7 @@ export default function DeviceHealthPage() {
   }
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-4 space-y-4">
       <div className="flex items-center justify-between gap-3">
         <button
           onClick={() => navigate(-1)}
@@ -86,19 +100,17 @@ export default function DeviceHealthPage() {
         lastSeen={health.last_seen}
       />
 
-      <div className="grid grid-cols-1 2xl:grid-cols-[1fr_0.95fr] gap-5">
-        <CurrentHealthSection checks={health.current_checks} />
-        <CurrentStatusSummary
-          onlineMinutes={health.online_minutes}
-          degradedMinutes={health.degraded_minutes}
-          offlineMinutes={health.offline_minutes}
-          noDataMinutes={health.no_data_minutes}
-        />
-      </div>
+      <CurrentHealthSection
+        checks={currentChecks}
+        onlineMinutes={health.online_minutes}
+        degradedMinutes={health.degraded_minutes}
+        offlineMinutes={health.offline_minutes}
+        noDataMinutes={health.no_data_minutes}
+      />
 
-      <HealthTimeline timeline={health.timeline} />
+      <HealthTimeline timeline={timeline} />
 
-      <div className="grid grid-cols-1 2xl:grid-cols-[1.05fr_0.95fr] gap-5">
+      <div className="grid grid-cols-1 2xl:grid-cols-[1.05fr_0.95fr] gap-4">
         <EventHistory events={health.events} />
         <DeviceInfoCard device={device} />
       </div>

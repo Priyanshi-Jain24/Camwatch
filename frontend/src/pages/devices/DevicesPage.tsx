@@ -4,7 +4,7 @@ import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { devicesApi } from '@/api'
 import { formatDate, formatDowntime, formatLatencyWithLoss } from '@/utils'
 import { Spinner, EmptyState, PageHeader, StatusDot, StatusBadge, DeviceTypeBadge } from '@/components/shared'
-import { Search, MonitorPlay, ArrowLeft } from 'lucide-react'
+import { Search, MonitorPlay, ArrowLeft, MapPin } from 'lucide-react'
 import type { Device } from '@/types'
 
 // "online" intentionally includes degraded so the count matches the dashboard's
@@ -19,8 +19,8 @@ function matchesStatus(device: Device, status: string): boolean {
 export default function DevicesPage() {
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
-  const type = params.get('type') ?? ''       // '' | 'camera' | 'nvr'
-  const status = params.get('status') ?? ''    // '' | 'online' | 'offline' | 'degraded' | 'unknown'
+  const type = params.get('type') ?? ''
+  const status = params.get('status') ?? ''
   const search = params.get('q') ?? ''
 
   const { data: devices = [], isLoading } = useQuery({
@@ -29,7 +29,6 @@ export default function DevicesPage() {
     refetchInterval: 30_000,
   })
 
-  // Update a single query param while preserving the others (keeps URL shareable).
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(params)
     if (value) next.set(key, value)
@@ -71,7 +70,7 @@ export default function DevicesPage() {
               <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 className="input pl-7 text-xs py-1.5 w-44"
-                placeholder="Search name, IP…"
+                placeholder="Search name, IP..."
                 value={search}
                 onChange={e => setParam('q', e.target.value)}
               />
@@ -112,7 +111,11 @@ export default function DevicesPage() {
             </thead>
             <tbody>
               {filtered.map(dev => (
-                <tr key={dev.id} className="table-row border-b border-border/50 last:border-0">
+                <tr
+                  key={dev.id}
+                  className="table-row border-b border-border/50 last:border-0 cursor-pointer"
+                  onClick={() => navigate(`/devices/${dev.id}`)}
+                >
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-2">
                       <StatusDot status={dev.status} />
@@ -120,21 +123,30 @@ export default function DevicesPage() {
                     </div>
                   </td>
                   <td className="px-4 py-2.5 font-medium">
-                    <Link to={`/devices/${dev.id}`} className="hover:text-accent transition-colors">
+                    <Link
+                      to={`/devices/${dev.id}`}
+                      className="hover:text-accent transition-colors"
+                      onClick={event => event.stopPropagation()}
+                    >
                       {dev.name}
                     </Link>
                   </td>
                   <td className="px-4 py-2.5"><DeviceTypeBadge type={dev.device_type} /></td>
                   <td className="px-4 py-2.5 font-mono text-[12px]">{dev.ip_address}</td>
-                  <td className="px-4 py-2.5 text-muted text-[12px]">
-                    {dev.site_name || '—'}
-                    {dev.nvr_name && <span className="text-[10px] text-muted/70"> · {dev.nvr_name}</span>}
+                  <td className="px-4 py-2.5 text-[12px] min-w-[270px]">
+                    <div className="inline-flex max-w-[360px] items-start gap-2 rounded-md border border-border bg-surface2/45 px-2.5 py-1.5 text-text shadow-sm">
+                      <MapPin size={13} className="mt-0.5 shrink-0 text-accent" />
+                      <div className="min-w-0">
+                        <div className="truncate font-medium">{dev.site_name || '-'}</div>
+                        {dev.nvr_name && <div className="truncate text-[10px] text-muted mt-0.5">Linked NVR: {dev.nvr_name}</div>}
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-2.5 text-muted text-[12px] font-mono whitespace-nowrap">
                     {formatLatencyWithLoss(dev.latest_ping_latency_ms, dev.latest_ping_packet_loss_pct)}
                   </td>
                   <td className="px-4 py-2.5 text-muted text-[12px] whitespace-nowrap">
-                    {dev.last_seen ? formatDate(dev.last_seen) : '—'}
+                    {dev.last_seen ? formatDate(dev.last_seen) : '-'}
                     {dev.status === 'offline' && dev.downtime_seconds > 0 && (
                       <div className="text-[10px] text-danger mt-0.5">Down {formatDowntime(dev.downtime_seconds)}</div>
                     )}
@@ -147,7 +159,7 @@ export default function DevicesPage() {
       )}
 
       <div className="mt-4">
-        <Link to="/sites" className="text-[11px] text-accent hover:underline">Manage in Sites →</Link>
+        <Link to="/sites" className="text-[11px] text-accent hover:underline">Manage in Sites {'->'}</Link>
       </div>
     </div>
   )

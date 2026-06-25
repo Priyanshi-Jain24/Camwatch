@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { reportsApi } from '@/api'
 import { formatDowntime, uptimeColor, cn } from '@/utils'
 import { PageHeader, Spinner, DeviceTypeBadge } from '@/components/shared'
@@ -305,7 +306,11 @@ export default function ReportsPage() {
                     <tr key={'device_id' in row ? row.device_id : row.site_id} className="table-row">
                       {'device_name' in row ? (
                         <>
-                          <td className="table-cell px-4 font-medium">{row.device_name}</td>
+                          <td className="table-cell px-4 font-medium">
+                            <Link to={`/devices/${row.device_id}`} className="hover:text-accent transition-colors">
+                              {row.device_name}
+                            </Link>
+                          </td>
                           <td className="table-cell px-4 text-muted">{row.site_name}</td>
                           <td className="table-cell px-4">
                             <DeviceTypeBadge type={row.device_type} />

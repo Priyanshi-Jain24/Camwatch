@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Clock, Eye, History, MessageCircle, RefreshCw, UserCheck, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { alertsApi, sitesApi } from '@/api'
 import { EmptyState, Modal, PageHeader, Panel, Spinner } from '@/components/shared'
@@ -197,7 +198,15 @@ function AlertDetail({
                 {(alert.device_type || 'camera').toUpperCase()}
               </span>
             </div>
-            <div className="text-base font-semibold text-text">{alert.device_name || alert.title}</div>
+            <div className="text-base font-semibold text-text">
+              {alert.device_id ? (
+                <Link to={`/devices/${alert.device_id}`} className="hover:text-accent transition-colors">
+                  {alert.device_name || alert.title}
+                </Link>
+              ) : (
+                alert.device_name || alert.title
+              )}
+            </div>
             <div className="text-sm text-muted">
               {alert.site_name || '-'} · {alertTypeLabel(alert.alert_type)}
             </div>

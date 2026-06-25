@@ -912,7 +912,7 @@ function SiteDetail({
                       <td className="table-cell px-4">
                         <div className="flex items-center gap-1.5">
                           <button
-                            onClick={() => navigate(`/devices/${dev.id}`)}
+                            onClick={() => { setSelDevice(dev); setModal('viewDevice') }}
                             className="btn-icon" title="View details"
                           ><Eye size={12} /></button>
                           {canManage && (

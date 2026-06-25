@@ -98,6 +98,15 @@ function timelineStatusLabel(status: DeviceTimelineStatus) {
   return status === 'no_data' ? 'No Data' : statusDisplayLabel(status)
 }
 
+function timelineTooltipText(bucket: DeviceHealthTimelineBucket) {
+  return [
+    `${shortTime(bucket.start_at)} - ${shortTime(bucket.end_at)}`,
+    `Status: ${timelineStatusLabel(bucket.status)}`,
+    `Reason: ${bucket.reason}`,
+    ...bucket.checks.map(check => `${check.label}: ${check.detail}`),
+  ].join('\n')
+}
+
 function shortTime(value?: string | null) {
   if (!value) return '-'
   return new Date(value).toLocaleString('en-IN', {
@@ -166,22 +175,22 @@ export function DeviceHealthSummary({
   const statusLabel = timelineStatusLabel(currentStatus)
 
   return (
-    <div className="card py-4 px-5">
-      <div className="flex flex-col 2xl:flex-row 2xl:items-center gap-4">
-        <div className="flex items-start gap-4 flex-1 min-w-0">
-          <div className="w-16 h-16 rounded-full border border-border bg-surface2/35 flex items-center justify-center shrink-0">
-            <Server size={28} className="text-muted" />
+    <div className="card py-3.5 px-4">
+      <div className="flex flex-col 2xl:flex-row 2xl:items-center gap-3">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="w-12 h-12 rounded-full border border-border bg-surface2/35 flex items-center justify-center shrink-0">
+            <Server size={22} className="text-muted" />
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-2 min-w-0">
                 <StatusDot status={currentStatus === 'no_data' ? 'unknown' : currentStatus} />
-                <h1 className="text-[18px] font-semibold text-text truncate">{device.name}</h1>
+                <h1 className="text-[16px] font-semibold text-text truncate">{device.name}</h1>
               </div>
               <DeviceTypeBadge type={device.device_type} />
             </div>
-            <div className="text-[13px] text-muted mt-1 truncate">{device.site_name || '-'}</div>
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="text-[12px] text-muted mt-0.5 truncate">{device.site_name || '-'}</div>
+            <div className="flex flex-wrap gap-1.5 mt-2">
               <span className="badge-unknown">IP: {device.ip_address}</span>
               {device.vendor && <span className="badge-unknown">Vendor: {device.vendor}</span>}
               {device.model && <span className="badge-unknown">Model: {device.model}</span>}
@@ -189,34 +198,34 @@ export function DeviceHealthSummary({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 2xl:min-w-[760px]">
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
-            <div className={cn('inline-flex items-center gap-2 text-[14px] font-semibold px-3 py-2 rounded-lg', statusClass)}>
-              <span className={cn('w-2.5 h-2.5 rounded-full inline-block', statusDotClass(currentStatus))} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 2xl:min-w-[650px]">
+          <div className="rounded-lg border border-border bg-surface px-3 py-2.5 min-h-[78px]">
+            <div className={cn('inline-flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1.5 rounded-lg', statusClass)}>
+              <span className={cn('w-2 h-2 rounded-full inline-block', statusDotClass(currentStatus))} />
               {statusLabel}
             </div>
-            <div className="text-[11px] text-muted mt-2">
+            <div className="text-[10px] text-muted mt-1.5">
               Since {lastSeen ? shortDateLabel(lastSeen) : 'No recent update'}
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
-            <div className="text-[11px] text-muted mb-2">Latency</div>
-            <div className="text-[22px] font-semibold text-text tabular-nums">
+          <div className="rounded-lg border border-border bg-surface px-3 py-2.5 min-h-[78px]">
+            <div className="text-[10px] text-muted mb-1.5">Latency</div>
+            <div className="text-[18px] font-semibold text-text tabular-nums">
               {latencyMs !== null && latencyMs !== undefined ? Math.round(latencyMs) : '-'}
-              {latencyMs !== null && latencyMs !== undefined && <span className="text-[14px] ml-1">ms</span>}
+              {latencyMs !== null && latencyMs !== undefined && <span className="text-[12px] ml-1">ms</span>}
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
-            <div className="text-[11px] text-muted mb-2">Last Seen</div>
-            <div className="text-[22px] font-semibold text-text tabular-nums">{shortTime(lastSeen)}</div>
-            <div className="text-[11px] text-muted mt-1">{lastSeen ? 'Today' : 'No data'}</div>
+          <div className="rounded-lg border border-border bg-surface px-3 py-2.5 min-h-[78px]">
+            <div className="text-[10px] text-muted mb-1.5">Last Seen</div>
+            <div className="text-[18px] font-semibold text-text tabular-nums leading-tight">{shortTime(lastSeen)}</div>
+            <div className="text-[10px] text-muted mt-1">{lastSeen ? 'Today' : 'No data'}</div>
           </div>
 
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
-            <div className="text-[11px] text-muted mb-2">Uptime (24h)</div>
-            <div className={cn('text-[22px] font-semibold tabular-nums', uptimeColor(uptime24hPercent))}>
+          <div className="rounded-lg border border-border bg-surface px-3 py-2.5 min-h-[78px]">
+            <div className="text-[10px] text-muted mb-1.5">Uptime (24h)</div>
+            <div className={cn('text-[18px] font-semibold tabular-nums', uptimeColor(uptime24hPercent))}>
               {uptime24hPercent.toFixed(1)}%
             </div>
           </div>
@@ -226,70 +235,83 @@ export function DeviceHealthSummary({
   )
 }
 
-export function CurrentHealthSection({ checks }: { checks: DeviceHealthCheck[] }) {
-  return (
-    <Panel title="Current Health">
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {checks.map(check => {
-          const tone = healthTone(check.status)
-          return (
-            <div key={check.key} className={cn('rounded-lg border px-4 py-4 min-h-[128px]', tone.card)}>
-              <div className="flex items-start gap-3">
-                <div className={cn('w-12 h-12 rounded-full flex items-center justify-center shrink-0', tone.iconWrap)}>
-                  {healthIcon(check.status)}
-                </div>
-                <div>
-                  <div className="text-[13px] font-semibold text-text">{check.label}</div>
-                  <div className={cn('text-[16px] font-semibold mt-1', tone.text)}>
-                    {check.status === 'healthy' ? 'Pass' : check.status === 'warning' ? 'Delayed' : check.status === 'failed' ? 'Fail' : 'No Data'}
-                  </div>
-                </div>
-              </div>
-              <div className={cn('text-[13px] mt-4 break-words', check.status === 'failed' ? 'text-danger' : 'text-text')}>
-                {check.reason}
-              </div>
-              {check.metrics && <div className="text-[12px] text-muted mt-2">{check.metrics}</div>}
-            </div>
-          )
-        })}
-      </div>
-    </Panel>
-  )
-}
-
-export function CurrentStatusSummary({
+export function CurrentHealthSection({
+  checks,
   onlineMinutes,
   degradedMinutes,
   offlineMinutes,
   noDataMinutes,
 }: {
+  checks: DeviceHealthCheck[]
   onlineMinutes: number
   degradedMinutes: number
   offlineMinutes: number
   noDataMinutes: number
 }) {
-  const items = [
+  const summaryItems = [
     { label: 'Online', value: onlineMinutes, className: 'text-success', dot: 'bg-success' },
     { label: 'Degraded', value: degradedMinutes, className: 'text-warning', dot: 'bg-warning' },
     { label: 'Offline', value: offlineMinutes, className: 'text-danger', dot: 'bg-danger' },
     { label: 'No Data', value: noDataMinutes, className: 'text-muted', dot: 'bg-muted' },
   ]
+  const liveCheckGridClass = checks.length <= 2 ? 'grid grid-cols-1 gap-1.5' : 'grid grid-cols-2 gap-1.5'
 
   return (
-    <Panel title="Current Status Summary">
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-        {items.map(item => (
-          <div key={item.label} className="rounded-lg border border-border bg-surface px-4 py-4">
-            <div className="flex items-center gap-2 text-[13px] text-text">
-              <span className={cn('w-3 h-3 rounded-full inline-block', item.dot)} />
-              {item.label}
+    <Panel title="Current Health" className="p-4">
+      <div className="overflow-x-auto pb-1">
+        <div className="grid grid-cols-2 gap-3 items-stretch min-w-[860px]">
+        <div className="rounded-lg border border-border bg-surface/70 p-2.5">
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Live Checks</div>
+          <div className={liveCheckGridClass}>
+        {checks.map(check => {
+          const tone = healthTone(check.status)
+          return (
+            <div key={check.key} className={cn('rounded border px-2.5 py-2 min-h-[64px]', tone.card)}>
+              <div className="flex items-start gap-1.5">
+                <div className={cn('w-5 h-5 rounded-full flex items-center justify-center shrink-0', tone.iconWrap)}>
+                  {healthIcon(check.status)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-[11px] font-semibold text-text truncate">{check.label}</div>
+                    <div className={cn('text-[11px] font-semibold shrink-0', tone.text)}>
+                      {check.status === 'healthy' ? 'Pass' : check.status === 'warning' ? 'Delayed' : check.status === 'failed' ? 'Fail' : 'No Data'}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1.5 min-w-0">
+                    <span className={cn('text-[10px] truncate', check.status === 'failed' ? 'text-danger' : 'text-muted')}>
+                      {check.reason}
+                    </span>
+                    {check.metrics && <span className="text-[10px] text-muted shrink-0">{check.metrics}</span>}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className={cn('text-[18px] font-semibold tabular-nums mt-3', item.className)}>
-              {durationLabel(item.value)}
-            </div>
-            <div className="text-[12px] text-muted mt-1">({((item.value / 1440) * 100).toFixed(1)}%)</div>
+          )
+        })}
           </div>
-        ))}
+        </div>
+
+        <div className="rounded-lg border border-border bg-surface/70 p-2.5">
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">24h Status Summary</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {summaryItems.map(item => (
+              <div key={item.label} className="rounded border border-border bg-surface2/20 px-2.5 py-2 min-h-[64px]">
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-1.5 text-[10px] text-text truncate">
+                    <span className={cn('w-2 h-2 rounded-full inline-block', item.dot)} />
+                    {item.label}
+                  </div>
+                  <div className="text-[10px] text-muted">({((item.value / 1440) * 100).toFixed(1)}%)</div>
+                </div>
+                <div className={cn('text-[13px] font-semibold tabular-nums mt-1.5', item.className)}>
+                  {durationLabel(item.value)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        </div>
       </div>
     </Panel>
   )
@@ -297,11 +319,13 @@ export function CurrentStatusSummary({
 
 export function HealthTimeline({ timeline }: { timeline: DeviceHealthTimelineBucket[] }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null)
   const hoveredBucket = activeIndex !== null ? timeline[activeIndex] : null
 
   return (
     <Panel title="Last 24 Hours Health Timeline">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div className="relative">
+      <div className="flex flex-wrap items-center gap-5 mb-4">
         <div className="flex flex-wrap gap-5 text-[13px]">
           {[
             ['Online', 'bg-success'],
@@ -315,35 +339,54 @@ export function HealthTimeline({ timeline }: { timeline: DeviceHealthTimelineBuc
             </div>
           ))}
         </div>
-        <div className="flex items-center gap-2">
-          <button className="btn-ghost text-xs py-1.5 px-3 border-accent text-accent">24 Hours</button>
-          <button className="btn-ghost text-xs py-1.5 px-3 opacity-60 cursor-default" disabled>7 Days</button>
-          <button className="btn-ghost text-xs py-1.5 px-3 opacity-60 cursor-default" disabled>30 Days</button>
-        </div>
       </div>
 
-      <div className="relative overflow-x-auto pb-2">
-        <div className="min-w-[1080px]">
-          <div className="grid gap-2" style={{ gridTemplateColumns: TIMELINE_COLUMNS }}>
+      <div className="relative pb-1">
+        <div className="w-full">
+          <div className="grid gap-1" style={{ gridTemplateColumns: TIMELINE_COLUMNS }}>
             {timeline.map((bucket, index) => (
               <button
                 key={bucket.start_at}
                 type="button"
                 className={cn(
-                  'h-10 rounded-md transition-all border border-transparent',
+                  'h-7 rounded transition-all border border-transparent',
                   timelineStatusClasses(bucket.status),
                   activeIndex === index && 'scale-[1.03] ring-2 ring-black/15 border-accent/35',
                 )}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
+                onMouseEnter={(event) => {
+                  setActiveIndex(index)
+                  setTooltipPosition({ x: event.clientX, y: event.clientY })
+                }}
+                onMouseMove={(event) => setTooltipPosition({ x: event.clientX, y: event.clientY })}
+                onMouseLeave={() => {
+                  setActiveIndex(null)
+                  setTooltipPosition(null)
+                }}
+                onPointerEnter={(event) => {
+                  setActiveIndex(index)
+                  setTooltipPosition({ x: event.clientX, y: event.clientY })
+                }}
+                onPointerMove={(event) => setTooltipPosition({ x: event.clientX, y: event.clientY })}
+                onPointerLeave={() => {
+                  setActiveIndex(null)
+                  setTooltipPosition(null)
+                }}
                 onFocus={() => setActiveIndex(index)}
-                onBlur={() => setActiveIndex(null)}
+                onBlur={() => {
+                  setActiveIndex(null)
+                  setTooltipPosition(null)
+                }}
+                onClick={(event) => {
+                  setActiveIndex(index)
+                  setTooltipPosition({ x: event.clientX, y: event.clientY })
+                }}
                 aria-label={`${shortDateLabel(bucket.start_at)} ${timelineStatusLabel(bucket.status)}`}
+                title={timelineTooltipText(bucket)}
               />
             ))}
           </div>
 
-          <div className="grid gap-2 mt-3 text-[12px] text-text" style={{ gridTemplateColumns: TIMELINE_COLUMNS }}>
+          <div className="grid gap-1 mt-2 text-[8px] sm:text-[9px] text-muted" style={{ gridTemplateColumns: TIMELINE_COLUMNS }}>
             {timeline.map((bucket) => (
               <div key={`${bucket.start_at}-label`} className="text-center whitespace-nowrap">
                 {new Date(bucket.start_at).toLocaleString('en-IN', {
@@ -355,8 +398,14 @@ export function HealthTimeline({ timeline }: { timeline: DeviceHealthTimelineBuc
           </div>
         </div>
 
-        {hoveredBucket && (
-          <div className="absolute left-[280px] top-[-10px] z-20 w-[255px] rounded-lg border border-black/20 bg-black/90 text-white shadow-2xl p-4">
+      {hoveredBucket && tooltipPosition && (
+          <div
+            className="fixed pointer-events-none z-[100] w-[255px] rounded-lg border border-black/20 bg-black/90 text-white shadow-2xl p-4"
+            style={{
+              left: `min(${tooltipPosition.x + 14}px, calc(100vw - 275px))`,
+              top: `max(${tooltipPosition.y - 18}px, 12px)`,
+            }}
+          >
             <div className="text-[13px] font-semibold">
               {shortTime(hoveredBucket.start_at)} - {shortTime(hoveredBucket.end_at)}
             </div>
@@ -394,6 +443,7 @@ export function HealthTimeline({ timeline }: { timeline: DeviceHealthTimelineBuc
           </div>
         )}
       </div>
+      </div>
     </Panel>
   )
 }
@@ -404,14 +454,14 @@ export function EventHistory({ events }: { events: DeviceHealthEvent[] }) {
       {events.length === 0 ? (
         <div className="text-sm text-muted">No recent monitoring events.</div>
       ) : (
-        <div className="space-y-5">
-          {events.slice(0, 6).map((event, index) => (
+        <div className="max-h-[360px] overflow-y-auto pr-2 space-y-5 table-scroll">
+          {events.map((event, index) => (
             <div key={`${event.timestamp}-${index}`} className="flex gap-4">
               <div className="flex flex-col items-center shrink-0">
                 <div className="w-9 h-9 rounded-full border border-border bg-surface2/40 flex items-center justify-center">
                   {eventIcon(event.severity)}
                 </div>
-                {index !== Math.min(events.length, 6) - 1 && <div className="w-px flex-1 bg-border mt-1" />}
+                {index !== events.length - 1 && <div className="w-px flex-1 bg-border mt-1" />}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-3">
@@ -432,38 +482,40 @@ export function EventHistory({ events }: { events: DeviceHealthEvent[] }) {
 
 function InfoItem({ label, value }: { label: string; value?: string | null }) {
   return (
-    <div className="flex items-start gap-3 py-2">
-      <div className="w-5 h-5 flex items-center justify-center text-muted mt-0.5 shrink-0">
+    <div className="flex items-start gap-2 rounded border border-border bg-surface2/15 px-2.5 py-2 min-h-[54px]">
+      <div className="w-4 h-4 flex items-center justify-center text-muted mt-0.5 shrink-0">
         {infoIcon(label)}
       </div>
       <div className="min-w-0">
-        <div className="text-[12px] text-muted">{label}</div>
-        <div className="text-[14px] text-text break-words">{value || '-'}</div>
+        <div className="text-[10px] text-muted">{label}</div>
+        <div className="text-[12px] text-text break-words leading-snug">{value || '-'}</div>
       </div>
     </div>
   )
 }
 
 export function DeviceInfoCard({ device }: { device: Device }) {
+  const items = [
+    ['Type', device.device_type.toUpperCase()],
+    ['IP Address', device.ip_address],
+    ['HTTP Port', String(device.port)],
+    ['RTSP Port', String(device.rtsp_port)],
+    ['Username', device.username],
+    ['Vendor', device.vendor],
+    ['Model', device.model],
+    ['Serial No.', device.serial_number],
+    ['Firmware', device.firmware_version],
+    ['Site', device.site_name],
+    ['Added On', shortDateLabel(device.created_at)],
+    ['Notes', device.notes],
+  ] as const
+
   return (
     <Panel title="Device Information">
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-10">
-        <div>
-          <InfoItem label="Type" value={device.device_type.toUpperCase()} />
-          <InfoItem label="IP Address" value={device.ip_address} />
-          <InfoItem label="HTTP Port" value={String(device.port)} />
-          <InfoItem label="RTSP Port" value={String(device.rtsp_port)} />
-          <InfoItem label="Username" value={device.username} />
-          <InfoItem label="Firmware" value={device.firmware_version} />
-        </div>
-        <div>
-          <InfoItem label="Vendor" value={device.vendor} />
-          <InfoItem label="Model" value={device.model} />
-          <InfoItem label="Serial No." value={device.serial_number} />
-          <InfoItem label="Site" value={device.site_name} />
-          <InfoItem label="Added On" value={shortDateLabel(device.created_at)} />
-          <InfoItem label="Notes" value={device.notes} />
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+        {items.map(([label, value]) => (
+          <InfoItem key={label} label={label} value={value} />
+        ))}
       </div>
     </Panel>
   )

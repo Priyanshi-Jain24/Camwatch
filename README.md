@@ -7,7 +7,7 @@ Production-ready platform to monitor IP cameras and NVRs across multiple sites.
 ```bash
 git clone <repo>
 cd camwatch
-docker-compose up --build
+docker compose up -d --build
 ```
 
 - Frontend: http://localhost
@@ -212,6 +212,33 @@ curl -X POST http://localhost:8000/api/v1/notifications/test-email \
 ---
 
 ## Local Development
+
+### Docker Dev Mode
+
+Use this while changing code locally. The backend is mounted with reload, and the frontend runs through Vite on port `5173`, so most UI changes only need a browser refresh.
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+docker compose exec api alembic upgrade head
+```
+
+- Frontend dev server: http://localhost:5173
+- API: http://localhost:8000
+- API docs: http://localhost:8000/docs
+
+Useful commands:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f api
+docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f monitor
+docker compose -f docker-compose.yml -f docker-compose.dev.yml restart api monitor
+```
+
+Use the normal production-style compose when you want to test the final built nginx frontend:
+
+```bash
+docker compose up -d --build
+```
 
 ### Backend
 
