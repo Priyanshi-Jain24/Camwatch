@@ -8,6 +8,7 @@ import type {
   DashboardData,
   Device,
   DeviceDetail,
+  DeviceHealthHistory,
   DeviceStatus,
   DeviceType,
   GoogleSsoConfig,
@@ -60,6 +61,9 @@ export const devicesApi = {
 
   get: async (id: string): Promise<DeviceDetail> =>
     (await api.get<DeviceDetail>(`/devices/${id}`)).data,
+
+  healthHistory: async (id: string): Promise<DeviceHealthHistory> =>
+    (await api.get<DeviceHealthHistory>(`/devices/${id}/health-history`)).data,
 
   create: async (data: Partial<Device>): Promise<Device> =>
     (await api.post<Device>('/devices/', data)).data,

@@ -10,6 +10,7 @@ import LoginPage       from './pages/auth/LoginPage'
 import DashboardPage   from './pages/dashboard/DashboardPage'
 import SitesPage       from './pages/sites/SitesPage'
 import DevicesPage     from './pages/devices/DevicesPage'
+import DeviceHealthPage from './pages/devices/DeviceHealthPage'
 import AlertsPage      from './pages/alerts/AlertsPage'
 import ReportsPage     from './pages/reports/ReportsPage'
 import { useAuthStore } from './store/auth'
@@ -41,11 +42,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route index          element={<DashboardPage />} />
             <Route path="sites"   element={<SitesPage />} />
             <Route path="devices" element={<DevicesPage />} />
+            <Route path="devices/:id" element={<DeviceHealthPage />} />
             <Route path="alerts"  element={<AlertsPage />} />
             <Route path="reports" element={<ReportsPage />} />
             {/* cameras/nvrs now resolve to the flat Devices list, pre-filtered by type */}
             <Route path="cameras" element={<Navigate to="/devices?type=camera" replace />} />
             <Route path="nvrs"    element={<Navigate to="/devices?type=nvr" replace />} />
+            <Route path="cameras/:id" element={<DeviceHealthPage />} />
+            <Route path="nvrs/:id" element={<DeviceHealthPage />} />
             <Route path="import"  element={<Navigate to="/sites" replace />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

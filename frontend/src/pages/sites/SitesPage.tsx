@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { sitesApi, devicesApi } from '@/api'
+import { Link, useNavigate } from 'react-router-dom'
 import { apiErrorMessage, formatDate, formatDowntime, cn, isValidIpAddress, generateRtspUrl, formatLatencyWithLoss, pingStateLabel } from '@/utils'
 import {
   Spinner, EmptyState, PageHeader, Modal, ConfirmDialog,
@@ -692,6 +693,7 @@ function SiteDetail({
   site: Site; onBack: () => void; onEdit: () => void; canManage: boolean
 }) {
   const qc = useQueryClient()
+  const navigate = useNavigate()
   const displayName = stripCityFromDisplayName(site.name, site.city)
   const [modal, setModal] = useState<'addDevice' | 'editDevice' | 'csv' | 'viewDevice' | null>(null)
   const [selDevice, setSelDevice] = useState<Device | null>(null)
@@ -873,7 +875,11 @@ function SiteDetail({
                           <StatusBadge status={dev.status} />
                         </div>
                       </td>
-                      <td className="table-cell px-4 font-medium">{dev.name}</td>
+                      <td className="table-cell px-4 font-medium">
+                        <Link to={`/devices/${dev.id}`} className="hover:text-accent transition-colors">
+                          {dev.name}
+                        </Link>
+                      </td>
                       <td className="table-cell px-4">
                         <DeviceTypeBadge type={dev.device_type} />
                       </td>
@@ -906,7 +912,7 @@ function SiteDetail({
                       <td className="table-cell px-4">
                         <div className="flex items-center gap-1.5">
                           <button
-                            onClick={() => { setSelDevice(dev); setModal('viewDevice') }}
+                            onClick={() => navigate(`/devices/${dev.id}`)}
                             className="btn-icon" title="View details"
                           ><Eye size={12} /></button>
                           {canManage && (

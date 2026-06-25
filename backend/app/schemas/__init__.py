@@ -300,6 +300,52 @@ class DeviceDetail(DeviceOut):
         from_attributes = True
 
 
+class DeviceHealthCheckOut(BaseModel):
+    key: str
+    label: str
+    status: str
+    reason: str
+    metrics: Optional[str] = None
+    observed_at: Optional[datetime] = None
+
+
+class DeviceHealthTimelineCheckOut(BaseModel):
+    label: str
+    status: str
+    detail: str
+
+
+class DeviceHealthTimelineBucketOut(BaseModel):
+    start_at: datetime
+    end_at: datetime
+    status: str
+    reason: str
+    checks: List[DeviceHealthTimelineCheckOut]
+
+
+class DeviceHealthEventOut(BaseModel):
+    timestamp: datetime
+    severity: str
+    title: str
+    reason: Optional[str] = None
+    status: str
+
+
+class DeviceHealthHistoryResponse(BaseModel):
+    device_id: str
+    current_status: str
+    last_seen: Optional[datetime] = None
+    latency_ms: Optional[float] = None
+    uptime_24h_percent: float
+    online_minutes: int
+    degraded_minutes: int
+    offline_minutes: int
+    no_data_minutes: int
+    current_checks: List[DeviceHealthCheckOut]
+    timeline: List[DeviceHealthTimelineBucketOut]
+    events: List[DeviceHealthEventOut]
+
+
 # ─── CheckLog ─────────────────────────────────────────────────────────────────
 class CheckLogOut(BaseModel):
     id: str

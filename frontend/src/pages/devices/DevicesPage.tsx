@@ -119,7 +119,11 @@ export default function DevicesPage() {
                       <StatusBadge status={dev.status} />
                     </div>
                   </td>
-                  <td className="px-4 py-2.5 font-medium">{dev.name}</td>
+                  <td className="px-4 py-2.5 font-medium">
+                    <Link to={`/devices/${dev.id}`} className="hover:text-accent transition-colors">
+                      {dev.name}
+                    </Link>
+                  </td>
                   <td className="px-4 py-2.5"><DeviceTypeBadge type={dev.device_type} /></td>
                   <td className="px-4 py-2.5 font-mono text-[12px]">{dev.ip_address}</td>
                   <td className="px-4 py-2.5 text-muted text-[12px]">

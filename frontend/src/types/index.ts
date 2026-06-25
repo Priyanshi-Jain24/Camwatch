@@ -99,6 +99,55 @@ export interface DeviceDetail extends Device {
   open_alerts: Alert[]
 }
 
+export type DeviceHealthCheckStatus = 'healthy' | 'warning' | 'failed' | 'no_data'
+export type DeviceTimelineStatus = DeviceStatus | 'no_data'
+
+export interface DeviceHealthCheck {
+  key: string
+  label: string
+  status: DeviceHealthCheckStatus
+  reason: string
+  metrics?: string | null
+  observed_at?: string | null
+}
+
+export interface DeviceHealthTimelineCheck {
+  label: string
+  status: DeviceHealthCheckStatus
+  detail: string
+}
+
+export interface DeviceHealthTimelineBucket {
+  start_at: string
+  end_at: string
+  status: DeviceTimelineStatus
+  reason: string
+  checks: DeviceHealthTimelineCheck[]
+}
+
+export interface DeviceHealthEvent {
+  timestamp: string
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  title: string
+  reason?: string | null
+  status: DeviceTimelineStatus
+}
+
+export interface DeviceHealthHistory {
+  device_id: string
+  current_status: DeviceTimelineStatus
+  last_seen?: string | null
+  latency_ms?: number | null
+  uptime_24h_percent: number
+  online_minutes: number
+  degraded_minutes: number
+  offline_minutes: number
+  no_data_minutes: number
+  current_checks: DeviceHealthCheck[]
+  timeline: DeviceHealthTimelineBucket[]
+  events: DeviceHealthEvent[]
+}
+
 export interface CheckLog {
   id: string
   device_id: string
@@ -245,6 +294,7 @@ export interface NotificationLog {
   recipient: string
   message: string
   status: string
+  delivery_error?: string
   sent_at: string
 }
 
