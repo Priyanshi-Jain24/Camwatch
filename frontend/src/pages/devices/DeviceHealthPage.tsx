@@ -3,10 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { devicesApi } from '@/api'
 import {
+  CurrentHealthSection,
+  CurrentStatusSummary,
   DeviceHealthSummary,
   DeviceInfoCard,
   EventHistory,
-  HealthCheckCards,
   HealthTimeline,
 } from '@/components/device-health'
 import { EmptyState, Spinner } from '@/components/shared'
@@ -85,15 +86,17 @@ export default function DeviceHealthPage() {
         lastSeen={health.last_seen}
       />
 
-      <HealthCheckCards checks={health.current_checks} />
+      <div className="grid grid-cols-1 2xl:grid-cols-[1fr_0.95fr] gap-5">
+        <CurrentHealthSection checks={health.current_checks} />
+        <CurrentStatusSummary
+          onlineMinutes={health.online_minutes}
+          degradedMinutes={health.degraded_minutes}
+          offlineMinutes={health.offline_minutes}
+          noDataMinutes={health.no_data_minutes}
+        />
+      </div>
 
-      <HealthTimeline
-        timeline={health.timeline}
-        onlineMinutes={health.online_minutes}
-        degradedMinutes={health.degraded_minutes}
-        offlineMinutes={health.offline_minutes}
-        noDataMinutes={health.no_data_minutes}
-      />
+      <HealthTimeline timeline={health.timeline} />
 
       <div className="grid grid-cols-1 2xl:grid-cols-[1.05fr_0.95fr] gap-5">
         <EventHistory events={health.events} />
