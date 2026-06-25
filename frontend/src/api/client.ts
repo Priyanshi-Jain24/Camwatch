@@ -19,9 +19,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const path = String(err.config?.url || '')
+    const isAuthCheck = path.includes('/auth/me')
+    const isLoginRequest = path.includes('/auth/login') || path.includes('/auth/google/login')
+
+    if (err.response?.status === 401 && isAuthCheck && !isLoginRequest) {
       localStorage.removeItem('access_token')
-      window.location.href = '/login'
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(err)
   }

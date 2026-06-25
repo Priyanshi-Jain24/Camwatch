@@ -98,15 +98,6 @@ function timelineStatusLabel(status: DeviceTimelineStatus) {
   return status === 'no_data' ? 'No Data' : statusDisplayLabel(status)
 }
 
-function timelineTooltipText(bucket: DeviceHealthTimelineBucket) {
-  return [
-    `${shortTime(bucket.start_at)} - ${shortTime(bucket.end_at)}`,
-    `Status: ${timelineStatusLabel(bucket.status)}`,
-    `Reason: ${bucket.reason}`,
-    ...bucket.checks.map(check => `${check.label}: ${check.detail}`),
-  ].join('\n')
-}
-
 function shortTime(value?: string | null) {
   if (!value) return '-'
   return new Date(value).toLocaleString('en-IN', {
@@ -381,7 +372,6 @@ export function HealthTimeline({ timeline }: { timeline: DeviceHealthTimelineBuc
                   setTooltipPosition({ x: event.clientX, y: event.clientY })
                 }}
                 aria-label={`${shortDateLabel(bucket.start_at)} ${timelineStatusLabel(bucket.status)}`}
-                title={timelineTooltipText(bucket)}
               />
             ))}
           </div>

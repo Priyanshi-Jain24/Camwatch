@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import './index.css'
 import { AppLayout }   from './components/layout/AppLayout'
+import { Spinner } from './components/shared'
 import LoginPage       from './pages/auth/LoginPage'
 import DashboardPage   from './pages/dashboard/DashboardPage'
 import SitesPage       from './pages/sites/SitesPage'
@@ -22,8 +23,11 @@ const queryClient = new QueryClient({
 })
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { token, loadUser } = useAuthStore()
-  useEffect(() => { if (token) loadUser() }, [])
+  const { token, user, isLoading, loadUser } = useAuthStore()
+  useEffect(() => { loadUser() }, [loadUser])
+  if (token && !user && isLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-bg"><Spinner /></div>
+  }
   if (!token) return <Navigate to="/login" replace />
   return <>{children}</>
 }
